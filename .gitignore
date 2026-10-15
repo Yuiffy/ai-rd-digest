@@ -1,0 +1,14 @@
+boturl.txt
+*.env
+.env*
+!config.example.env
+__pycache__/
+local-state.json
+preview.json
+*.zip
+work/
+*.sqlite3*
+*.dpapi
+settings.json
+first-edition-candidates.json
+FIRST_EDITION_REVIEW.md

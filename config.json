@@ -1,0 +1,56 @@
+{
+  "start_date": "2026-10-01",
+  "max_articles": 6,
+  "sources": {
+    "Anthropic": {
+      "hosts": [
+        "www.anthropic.com",
+        "anthropic.com",
+        "alignment.anthropic.com",
+        "red.anthropic.com"
+      ],
+      "indexes": [
+        "https://www.anthropic.com/research",
+        "https://www.anthropic.com/institute",
+        "https://www.anthropic.com/news",
+        "https://alignment.anthropic.com/",
+        "https://red.anthropic.com/",
+        "https://www.anthropic.com/research/team/frontier-red-team",
+        "https://www.anthropic.com/engineering"
+      ],
+      "feeds": [],
+      "sitemaps": [
+        "https://www.anthropic.com/sitemap.xml",
+        "https://alignment.anthropic.com/sitemap.xml",
+        "https://red.anthropic.com/sitemap.xml"
+      ]
+    },
+    "OpenAI": {
+      "hosts": [
+        "openai.com",
+        "www.openai.com",
+        "alignment.openai.com",
+        "deploymentsafety.openai.com",
+        "developers.openai.com"
+      ],
+      "indexes": [
+        "https://openai.com/research/",
+        "https://openai.com/news/",
+        "https://openai.com/index/",
+        "https://alignment.openai.com/",
+        "https://deploymentsafety.openai.com/",
+        "https://developers.openai.com/blog/",
+        "https://openai.com/news/research/",
+        "https://alignment.openai.com/misalignment-reports/"
+      ],
+      "feeds": [
+        "https://openai.com/news/rss.xml"
+      ],
+      "sitemaps": [
+        "https://openai.com/sitemap.xml",
+        "https://alignment.openai.com/sitemap.xml",
+        "https://developers.openai.com/sitemap.xml"
+      ]
+    }
+  }
+}
