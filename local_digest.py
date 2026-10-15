@@ -39,6 +39,39 @@ def read_json(path):
     return json.loads(Path(path).read_text(encoding='utf-8-sig'))
 
 
+def load_config(root=None):
+    root = Path(root) if root else ROOT
+    config = read_json(root / 'config.json')
+    def merge(base, overrides):
+        for key, value in overrides.items():
+            if isinstance(value, dict) and isinstance(base.get(key), dict):
+                merge(base[key], value)
+            else:
+                base[key] = value
+    local = root / 'config.local.json'
+    if local.exists():
+        overrides = read_json(local)
+        if not isinstance(overrides, dict):
+            raise d.Failure('config.local.json must contain a JSON object')
+        merge(config, overrides)
+    editorial = config.get('editorial', {})
+    if not isinstance(editorial, dict):
+        raise d.Failure('editorial must be a JSON object')
+    if editorial:
+        if not isinstance(editorial.get('audience'), str) or not editorial['audience'].strip():
+            raise d.Failure('editorial.audience must be a nonempty string')
+        topics = editorial.get('topics')
+        if not isinstance(topics, list) or not topics or any(not isinstance(t, str) or not t.strip() for t in topics):
+            raise d.Failure('editorial.topics must be a nonempty list of topic strings')
+        if not isinstance(editorial.get('priorities'), dict) or any(
+            not isinstance(editorial['priorities'].get(p), list)
+            or any(not isinstance(t, str) or not t.strip() for t in editorial['priorities'][p]) for p in ('P0', 'P1', 'P2')):
+            raise d.Failure('editorial.priorities must provide P0/P1/P2 lists of strings')
+        if not isinstance(editorial.get('exclude'), list) or any(not isinstance(t, str) for t in editorial['exclude']):
+            raise d.Failure('editorial.exclude must be a list of strings')
+    return config
+
+
 class Lock:
     """OS-owned advisory lock: crash releases it; a second command fails closed."""
     def __enter__(self):
@@ -321,14 +354,18 @@ def deliver(store, state, prepared=None, test=False):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('mode', choices=['initialize', 'install-secret', 'legacy-not-received', 'status', 'collect', 'prepare', 'test-send', 'send', 'reconcile-not-sent', 'reconcile-sent', 'backup'])
+    p.add_argument('mode', choices=['show-config', 'initialize', 'install-secret', 'legacy-not-received', 'status', 'collect', 'prepare', 'test-send', 'send', 'reconcile-not-sent', 'reconcile-sent', 'backup'])
     p.add_argument('--file')
     p.add_argument('--sources')
     p.add_argument('--review')
     p.add_argument('--out')
     p.add_argument('--reason')
     args = p.parse_args()
-    config = read_json(ROOT / 'config.json')
+    config = load_config()
+    if args.mode == 'show-config':
+        # Whitelist public settings: never print proxy or webhook environment values.
+        print(json.dumps({k: config[k] for k in ('start_date', 'max_articles', 'editorial', 'sources') if k in config}, ensure_ascii=False, indent=2))
+        return
     settings_path = HOME / 'settings.json'
     if settings_path.exists():
         settings = read_json(settings_path)
@@ -402,6 +439,8 @@ def main():
 
 
 if __name__ == '__main__':
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
     try:
         main()
     except Exception as e:

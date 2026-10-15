@@ -1,6 +1,24 @@
 {
   "start_date": "2026-10-01",
   "max_articles": 6,
+  "editorial": {
+    "audience": "People following AI research and product updates",
+    "topics": [
+      "AI programming and software engineering",
+      "Agents, MCP, tools and automation",
+      "Models, APIs and developer platforms",
+      "AI research acceleration and reliability"
+    ],
+    "priorities": {
+      "P0": ["Practical advances directly relevant to the configured topics", "Major model, API, capability or cost changes"],
+      "P1": ["Research with clear potential relevance to the configured topics"],
+      "P2": ["Economics, social impact, governance and theory: major findings with practical significance only"]
+    },
+    "exclude": [
+      "Generic marketing, funding, hiring and office announcements",
+      "Minor UI changes, routine bug fixes and announcements without substantive changes"
+    ]
+  },
   "sources": {
     "Anthropic": {
       "hosts": [

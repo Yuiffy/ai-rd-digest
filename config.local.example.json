@@ -1,0 +1,16 @@
+{
+  "editorial": {
+    "audience": "Developers and researchers interested in healthcare applications",
+    "topics": [
+      "AI agents and software engineering",
+      "Healthcare AI, medical data and life sciences"
+    ],
+    "priorities": {
+      "P0": [
+        "Practical engineering advances related to these topics",
+        "Healthcare and life-science applications with clear evidence"
+      ],
+      "P1": ["Research acceleration, reliability and evaluation methods"]
+    }
+  }
+}

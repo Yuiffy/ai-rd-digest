@@ -1,5 +1,8 @@
 import copy
 import datetime as dt
+import contextlib
+import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -152,6 +155,37 @@ class LocalTests(unittest.TestCase):
             l.deliver(self.store, self.state, p)
             send.assert_not_called()
         self.assertTrue(self.store.load()['first_complete'])
+
+    def test_personal_config_merges_objects_and_replaces_topics(self):
+        base = l.read_json(l.ROOT / 'config.json')
+        l.write_json(self.root / 'config.json', base)
+        l.write_json(self.root / 'config.local.json', {'editorial': {
+            'audience': 'Researchers', 'topics': ['Healthcare AI'], 'priorities': {'P0': ['Relevant clinical research']}}})
+        config = l.load_config(self.root)
+        self.assertEqual(config['editorial']['topics'], ['Healthcare AI'])
+        self.assertEqual(config['editorial']['priorities']['P0'], ['Relevant clinical research'])
+        self.assertEqual(config['editorial']['priorities']['P2'], base['editorial']['priorities']['P2'])
+        self.assertEqual(config['sources'], base['sources'])
+        self.assertEqual(l.read_json(self.root / 'config.json'), base)
+
+    def test_invalid_topic_configuration_fails_clearly(self):
+        l.write_json(self.root / 'config.json', l.read_json(l.ROOT / 'config.json'))
+        for topics in ([], 'Healthcare AI', [123]):
+            l.write_json(self.root / 'config.local.json', {'editorial': {'topics': topics}})
+            with self.assertRaisesRegex(d.Failure, 'editorial.topics'):
+                l.load_config(self.root)
+
+    def test_show_config_without_database_or_private_settings(self):
+        config = l.read_json(l.ROOT / 'config.json')
+        config['webhook'] = 'private-placeholder'
+        l.write_json(self.root / 'config.json', config)
+        l.write_json(self.root / 'settings.json', {'feishu_proxy': 'private-proxy-placeholder'})
+        output = io.StringIO()
+        with patch.object(l, 'ROOT', self.root), patch.object(l.sys, 'argv', ['local_digest.py', 'show-config']), patch.object(l, 'Store') as store, contextlib.redirect_stdout(output):
+            l.main()
+            store.assert_not_called()
+        self.assertEqual(json.loads(output.getvalue())['editorial'], config['editorial'])
+        self.assertNotIn('private-', output.getvalue())
 
 
 if __name__ == '__main__': unittest.main()

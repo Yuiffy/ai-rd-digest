@@ -294,7 +294,7 @@ def duplicate(a, history):
 
 
 def card(items, today, first=False, test=False):
-    title = "AI 研发情报｜10 月首期精选" if first else "🤖 AI 研发情报日报｜" + today
+    title = f"AI 研发情报｜{dt.date.fromisoformat(today).month} 月首期精选" if first else "🤖 AI 研发情报日报｜" + today
     if test:
         title = "AI 研发情报｜部署连通性测试"
     elements = []

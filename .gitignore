@@ -10,5 +10,6 @@ work/
 *.sqlite3*
 *.dpapi
 settings.json
+config.local.json
 first-edition-candidates.json
 FIRST_EDITION_REVIEW.md

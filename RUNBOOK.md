@@ -35,7 +35,7 @@ python local_digest.py status
 python local_digest.py backup
 ```
 
-prepare 不发送、不改去重历史；send 会重新校验稿件和历史，当天已推送则静默。只在安装连通性测试时使用 `python local_digest.py test-send`。首期标题自动为「AI 研发情报｜10 月首期精选」，成功后永久记住 first_complete 与 first_cutoff；之后只发截止日之后的新内容。
+prepare 不发送、不改去重历史；send 会重新校验稿件和历史，当天已推送则静默。只在安装连通性测试时使用 `python local_digest.py test-send`。首期标题按执行月份自动生成为「AI 研发情报｜N 月首期精选」，成功后永久记住 first_complete 与 first_cutoff；之后只发截止日之后的新内容。
 
 若发送结果不明，先人工查看群历史，确认后再选择一个：
 
@@ -48,8 +48,10 @@ python local_digest.py reconcile-not-sent --reason "用户核实群内未收到�
 
 ## 修改与测试
 
-- 网站域名、RSS、索引、Sitemap、首期起始日、最大篇数：config.json。
-- 选题优先级、中文摘要风格和事实边界：EDITORIAL.md。
+- 执行 `python local_digest.py show-config` 查看实际生效的配置，不需要先初始化数据库。
+- 关注主题、读者背景、P0/P1/P2 和排除项：config.json 的 editorial；本机修改推荐写入 config.local.json。可复制 config.local.example.json 后编辑；该本机文件不会提交 Git。字典递归合并，数组整体替换。
+- 网站域名、RSS、索引、Sitemap、首期起始日、最大篇数：config.json；也支持 config.local.json 覆盖。新增来源需同时配置官方 hosts 和发现入口。
+- 中文摘要风格、事实边界和每日编辑流程：EDITORIAL.md。
 - 卡片布局和网页抽取：digest.py。
 - 代理、持久化、发送保护：local_digest.py / 本机 settings.json。
 - 每天时间、聊天提示：Codex 内的每日任务；修改文件不会自动改变日程。
